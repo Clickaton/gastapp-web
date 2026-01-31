@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: gastapp-web
+
+  profiles:
+    active: dev
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: public
+    open-in-view: false
+
+---
+# Desarrollo: H2 (JPA crea el esquema; schema.sql es solo para PostgreSQL)
+server:
+  address: 0.0.0.0   # Permite acceso desde celular/otros dispositivos en la misma WiFi (usá la IP de tu PC)
+spring:
+  config:
+    activate:
+      on-profile: dev
+  sql:
+    init:
+      mode: never
+  datasource:
+    url: jdbc:h2:mem:gastapp;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+
+---
+# Producción: PostgreSQL
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:gastapp}
+    username: ${POSTGRES_USER:gastapp}
+    password: ${POSTGRES_PASSWORD:gastapp}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate

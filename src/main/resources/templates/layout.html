@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title th:text="${pageTitle != null ? pageTitle + ' — gastAPP' : 'gastAPP'}">gastAPP</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-gastapp">
+    <div class="container">
+      <a class="navbar-brand" th:href="@{/dashboard}">gastAPP</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard}" th:classappend="${(requestURI == '/dashboard' or requestURI == '/') ? 'active' : ''}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/expenses}" th:classappend="${requestURI != null and requestURI.startsWith('/expenses') ? 'active' : ''}">Gastos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/categories}" th:classappend="${requestURI != null and requestURI.startsWith('/categories') ? 'active' : ''}">Categorías</a>
+          </li>
+        </ul>
+        <form th:action="@{/logout}" method="post" class="d-flex">
+          <button type="submit" class="btn btn-outline-secondary btn-sm">Cerrar sesión</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div th:if="${message}" class="alert alert-success alert-gastapp alert-dismissible fade show" role="alert">
+      <span th:text="${message}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-gastapp alert-dismissible fade show" role="alert">
+      <span th:text="${error}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:replace="~{::content}">Contenido</div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <div th:replace="~{::scripts}"></div>
+</body>
+</html>

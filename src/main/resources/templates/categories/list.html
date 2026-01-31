@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Categorías — gastAPP</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+  <nav th:replace="~{fragments/navbar :: nav}"></nav>
+  <main class="container py-4">
+    <div th:if="${message}" class="alert alert-success alert-gastapp alert-dismissible fade show">
+      <span th:text="${message}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-gastapp alert-dismissible fade show">
+      <span th:text="${error}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+      <h1 class="page-title mb-0">Categorías</h1>
+      <a th:href="@{/categories/new}" class="btn btn-gastapp">+ Nueva categoría</a>
+    </div>
+
+    <div class="card card-gastapp">
+      <div class="card-body p-0">
+        <div th:if="${#lists.isEmpty(categories)}" class="p-4 text-muted text-center">
+          Aún no tenés categorías. <a th:href="@{/categories/new}">Crear la primera</a> para usarlas en gastos.
+        </div>
+        <table th:if="${!#lists.isEmpty(categories)}" class="table table-gastapp table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Icono</th>
+              <th>Color</th>
+              <th class="text-end action-btns">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="c : ${categories}" th:with="colorVal=${c.color != null and !c.color.isEmpty() ? (c.color.startsWith('#') ? c.color : '#' + c.color) : '#6c757d'}">
+              <td class="fw-semibold" th:text="${c.nombre}">Nombre</td>
+              <td>
+                <i th:if="${c.icono != null and !c.icono.isEmpty()}" class="bi" th:classappend="${c.icono}" th:style="|color: ${colorVal}; font-size: 1.25rem|" aria-hidden="true"></i>
+                <span th:if="${c.icono == null or c.icono.isEmpty()}">—</span>
+              </td>
+              <td>
+                <span class="badge badge-category" th:style="|background: ${colorVal}20; color: ${colorVal}|" th:text="${colorVal}">#6c757d</span>
+              </td>
+              <td class="text-end">
+                <a th:href="@{/categories/{id}/edit(id=${c.id})}" class="btn btn-sm btn-outline-primary">Editar</a>
+                <form th:action="@{/categories/{id}/delete(id=${c.id})}" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar esta categoría? Los gastos que la usen quedarán sin categoría.');">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

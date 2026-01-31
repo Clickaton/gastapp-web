@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title th:text="${expense.id != null ? 'Editar gasto' : 'Nuevo gasto'} + ' — gastAPP'">Gasto — gastAPP</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+  <nav th:replace="~{fragments/navbar :: nav}"></nav>
+  <main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+      <h1 class="page-title mb-0" th:text="${expense.id != null ? 'Editar gasto' : 'Nuevo gasto'}">Nuevo gasto</h1>
+      <a th:href="@{/expenses}" class="btn btn-outline-secondary">Volver</a>
+    </div>
+
+    <div class="card card-gastapp">
+      <div class="card-body p-4">
+        <form th:action="@{/expenses/save}" th:object="${expense}" method="post">
+          <input th:if="${expense.id != null}" type="hidden" th:field="*{id}"/>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">Monto *</label>
+              <input type="number" th:field="*{monto}" class="form-control" step="0.01" min="0.01" required/>
+              <p th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}" class="text-danger small mt-1"></p>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Fecha *</label>
+              <input type="date" th:field="*{fecha}" class="form-control" required/>
+              <p th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}" class="text-danger small mt-1"></p>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Categoría *</label>
+              <select th:field="*{categoryId}" class="form-select" required>
+                <option value="">Elegir categoría</option>
+                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
+              </select>
+              <p th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="text-danger small mt-1"></p>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Descripción</label>
+              <input type="text" th:field="*{descripcion}" class="form-control" placeholder="Opcional" maxlength="500"/>
+            </div>
+          </div>
+          <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-gastapp">Guardar</button>
+            <a th:href="@{/expenses}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
