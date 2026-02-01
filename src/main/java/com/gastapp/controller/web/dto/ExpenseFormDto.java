@@ -1,5 +1,6 @@
 package com.gastapp.controller.web.dto;
 
+import com.gastapp.model.Account;
 import com.gastapp.model.Category;
 import com.gastapp.model.Expense;
 import jakarta.validation.constraints.DecimalMin;
@@ -22,6 +23,8 @@ public class ExpenseFormDto {
     private LocalDate fecha = LocalDate.now();
     @NotNull(message = "Elegí una categoría")
     private UUID categoryId;
+    @NotNull(message = "Elegí una cuenta")
+    private UUID accountId;
 
     public static ExpenseFormDto from(Expense e) {
         ExpenseFormDto dto = new ExpenseFormDto();
@@ -30,16 +33,18 @@ public class ExpenseFormDto {
         dto.setDescripcion(e.getDescripcion() != null ? e.getDescripcion() : "");
         dto.setFecha(e.getFecha());
         dto.setCategoryId(e.getCategory().getId());
+        dto.setAccountId(e.getAccount().getId());
         return dto;
     }
 
-    public Expense toExpense(Category category) {
+    public Expense toExpense(Category category, Account account) {
         return Expense.builder()
             .id(id != null ? id : UUID.randomUUID())
             .monto(monto)
             .descripcion(descripcion != null && !descripcion.isBlank() ? descripcion.trim() : null)
             .fecha(fecha)
             .category(category)
+            .account(account)
             .user(category.getUser())
             .build();
     }

@@ -1,0 +1,78 @@
+package com.gastapp.controller.web;
+
+import com.gastapp.controller.web.dto.AccountFormDto;
+import com.gastapp.model.Account;
+import com.gastapp.service.AccountService;
+import com.gastapp.service.CurrentUserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.UUID;
+
+@Controller
+@RequestMapping("/accounts")
+@RequiredArgsConstructor
+public class AccountWebController {
+
+    private final AccountService accountService;
+    private final CurrentUserService currentUserService;
+
+    @GetMapping
+    public String list(Model model) {
+        UUID userId = currentUserService.getCurrentUserIdOrThrow();
+        model.addAttribute("cuentasConSaldos", accountService.listarCuentasConSaldos(userId));
+        return "accounts/list";
+    }
+
+    @GetMapping("/new")
+    public String formNew(Model model) {
+        model.addAttribute("account", new AccountFormDto());
+        model.addAttribute("accountTypes", com.gastapp.model.AccountType.values());
+        return "accounts/form";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String formEdit(@PathVariable UUID id, Model model, RedirectAttributes redirect) {
+        UUID userId = currentUserService.getCurrentUserIdOrThrow();
+        return accountService.findByIdAndUserId(id, userId)
+            .map(a -> {
+                model.addAttribute("account", AccountFormDto.from(a));
+                model.addAttribute("accountTypes", com.gastapp.model.AccountType.values());
+                return "accounts/form";
+            })
+            .orElseGet(() -> {
+                redirect.addFlashAttribute("error", "Cuenta no encontrada.");
+                return "redirect:/accounts";
+            });
+    }
+
+    @PostMapping("/save")
+    public String save(@Valid @ModelAttribute("account") AccountFormDto form, BindingResult result,
+                       Model model, RedirectAttributes redirect) {
+        UUID userId = currentUserService.getCurrentUserIdOrThrow();
+        if (result.hasErrors()) {
+            model.addAttribute("accountTypes", com.gastapp.model.AccountType.values());
+            return "accounts/form";
+        }
+        Account account = form.toAccount(currentUserService.getCurrentUserOrThrow());
+        accountService.save(account);
+        redirect.addFlashAttribute("message", form.getId() != null ? "Cuenta actualizada." : "Cuenta creada.");
+        return "redirect:/accounts";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable UUID id, RedirectAttributes redirect) {
+        UUID userId = currentUserService.getCurrentUserIdOrThrow();
+        if (accountService.deleteByIdAndUserId(id, userId)) {
+            redirect.addFlashAttribute("message", "Cuenta eliminada.");
+        } else {
+            redirect.addFlashAttribute("error", "Cuenta no encontrada.");
+        }
+        return "redirect:/accounts";
+    }
+}

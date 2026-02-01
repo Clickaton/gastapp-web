@@ -18,7 +18,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
 
     List<Expense> findByUserIdOrderByFechaDesc(UUID userId);
 
-    @EntityGraph(attributePaths = "category")
+    @EntityGraph(attributePaths = {"category", "account"})
     @Query("SELECT e FROM Expense e WHERE e.user.id = :userId ORDER BY e.fecha DESC")
     List<Expense> findByUserIdOrderByFechaDescWithCategory(@Param("userId") UUID userId);
 
@@ -34,6 +34,20 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     @Query("SELECT COALESCE(SUM(e.monto), 0) FROM Expense e WHERE e.user.id = :userId AND e.fecha BETWEEN :desde AND :hasta")
     BigDecimal sumMontoByUserIdAndFechaBetween(
         @Param("userId") UUID userId,
+        @Param("desde") LocalDate desde,
+        @Param("hasta") LocalDate hasta
+    );
+
+    @Query("SELECT COALESCE(SUM(e.monto), 0) FROM Expense e WHERE e.account.id = :accountId AND e.fecha <= :hasta")
+    BigDecimal sumMontoByAccountIdAndFechaBefore(
+        @Param("accountId") UUID accountId,
+        @Param("hasta") LocalDate hasta
+    );
+
+    @Query("SELECT COALESCE(SUM(e.monto), 0) FROM Expense e WHERE e.user.id = :userId AND e.category.id = :categoryId AND e.fecha BETWEEN :desde AND :hasta")
+    BigDecimal sumMontoByUserIdAndCategoryIdAndFechaBetween(
+        @Param("userId") UUID userId,
+        @Param("categoryId") UUID categoryId,
         @Param("desde") LocalDate desde,
         @Param("hasta") LocalDate hasta
     );

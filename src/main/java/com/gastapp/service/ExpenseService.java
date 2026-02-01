@@ -21,6 +21,7 @@ import java.util.UUID;
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
+    private final BudgetService budgetService;
 
     @Transactional(readOnly = true)
     public List<Expense> findAllByUserId(UUID userId) {
@@ -37,6 +38,35 @@ public class ExpenseService {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
         return expenseRepository.sumMontoByUserIdAndFechaBetween(userId, start, end);
+    }
+
+    @Transactional(readOnly = true)
+    public BigDecimal sumMontoByUserIdAndCategoryIdAndMonth(UUID userId, UUID categoryId, int year, int month) {
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+        return expenseRepository.sumMontoByUserIdAndCategoryIdAndFechaBetween(userId, categoryId, start, end);
+    }
+
+    /**
+     * Valida si al registrar/editar un gasto se supera el presupuesto de la categoría para el mes.
+     */
+    @Transactional(readOnly = true)
+    public BudgetValidationResult validarPresupuesto(UUID userId, UUID categoryId, UUID expenseId, BigDecimal montoNuevo, LocalDate fecha) {
+        var budgetOpt = budgetService.findByUserIdAndCategoryIdAndMesAndAnio(userId, categoryId, fecha.getMonthValue(), fecha.getYear());
+        if (budgetOpt.isEmpty()) {
+            return new BudgetValidationResult(false, null, null, null);
+        }
+        BigDecimal limite = budgetOpt.get().getMontoMaximo();
+        BigDecimal gastoActual = sumMontoByUserIdAndCategoryIdAndMonth(userId, categoryId, fecha.getYear(), fecha.getMonthValue());
+        if (expenseId != null) {
+            var existing = expenseRepository.findByIdAndUserId(expenseId, userId);
+            if (existing.isPresent() && existing.get().getFecha().getMonthValue() == fecha.getMonthValue() && existing.get().getFecha().getYear() == fecha.getYear()) {
+                gastoActual = gastoActual.subtract(existing.get().getMonto());
+            }
+        }
+        BigDecimal totalConNuevo = gastoActual.add(montoNuevo);
+        boolean excedido = totalConNuevo.compareTo(limite) > 0;
+        return new BudgetValidationResult(excedido, limite, totalConNuevo, montoNuevo);
     }
 
     @Transactional

@@ -23,9 +23,12 @@ public class CurrentUserService {
         return Optional.empty();
     }
 
-    public UUID getCurrentUserIdOrThrow() {
+    public User getCurrentUserOrThrow() {
         return getCurrentUser()
-            .orElseThrow(() -> new IllegalStateException("Usuario no autenticado"))
-            .getId();
+            .orElseThrow(() -> new IllegalStateException("Usuario no autenticado"));
+    }
+
+    public UUID getCurrentUserIdOrThrow() {
+        return getCurrentUserOrThrow().getId();
     }
 }

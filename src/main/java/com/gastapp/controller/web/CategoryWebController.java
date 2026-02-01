@@ -28,7 +28,10 @@ public class CategoryWebController {
     @GetMapping
     public String list(Model model) {
         UUID userId = currentUserService.getCurrentUserIdOrThrow();
-        model.addAttribute("categories", categoryService.findAllByUserId(userId));
+        var now = java.time.LocalDate.now();
+        model.addAttribute("categoriesConPresupuesto", categoryService.findAllConPresupuestoByUserId(userId, now.getYear(), now.getMonthValue()));
+        model.addAttribute("month", now.getMonth().getDisplayName(java.time.format.TextStyle.FULL, new java.util.Locale("es")));
+        model.addAttribute("year", now.getYear());
         return "categories/list";
     }
 

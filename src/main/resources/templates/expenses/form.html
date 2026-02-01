@@ -10,6 +10,10 @@
 <body>
   <nav th:replace="~{fragments/navbar :: nav}"></nav>
   <main class="container py-4">
+    <div th:if="${warning}" class="alert alert-warning alert-gastapp alert-dismissible fade show">
+      <span th:text="${warning}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
       <h1 class="page-title mb-0" th:text="${expense.id != null ? 'Editar gasto' : 'Nuevo gasto'}">Nuevo gasto</h1>
       <a th:href="@{/expenses}" class="btn btn-outline-secondary">Volver</a>
@@ -37,6 +41,14 @@
                 <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
               </select>
               <p th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="text-danger small mt-1"></p>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Cuenta *</label>
+              <select th:field="*{accountId}" class="form-select" required>
+                <option value="">Elegir cuenta</option>
+                <option th:each="a : ${accounts}" th:value="${a.id}" th:text="${a.nombre}">Cuenta</option>
+              </select>
+              <p th:if="${#fields.hasErrors('accountId')}" th:errors="*{accountId}" class="text-danger small mt-1"></p>
             </div>
             <div class="col-12">
               <label class="form-label">Descripción</label>

@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 public class GastappWebApplication {
 
-    public static void main(String[] args) {
+    public s
+    tatic void main(String[] args) {
         SpringApplication.run(GastappWebApplication.class, args);
     }
 }

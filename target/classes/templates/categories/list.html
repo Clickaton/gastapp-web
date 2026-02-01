@@ -25,22 +25,25 @@
       <a th:href="@{/categories/new}" class="btn btn-gastapp">+ Nueva categoría</a>
     </div>
 
+    <p class="text-muted mb-3" th:if="${month != null and year != null}" th:text="'Presupuestos del mes: ' + ${month} + ' ' + ${year}">Presupuestos del mes</p>
+
     <div class="card card-gastapp">
       <div class="card-body p-0">
-        <div th:if="${#lists.isEmpty(categories)}" class="p-4 text-muted text-center">
+        <div th:if="${#lists.isEmpty(categoriesConPresupuesto)}" class="p-4 text-muted text-center">
           Aún no tenés categorías. <a th:href="@{/categories/new}">Crear la primera</a> para usarlas en gastos.
         </div>
-        <table th:if="${!#lists.isEmpty(categories)}" class="table table-gastapp table-hover mb-0">
+        <table th:if="${!#lists.isEmpty(categoriesConPresupuesto)}" class="table table-gastapp table-hover mb-0">
           <thead>
             <tr>
               <th>Nombre</th>
               <th>Icono</th>
               <th>Color</th>
+              <th>Presupuesto</th>
               <th class="text-end action-btns">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr th:each="c : ${categories}" th:with="colorVal=${c.color != null and !c.color.isEmpty() ? (c.color.startsWith('#') ? c.color : '#' + c.color) : '#6c757d'}">
+            <tr th:each="cp : ${categoriesConPresupuesto}" th:with="c=${cp.category}, colorVal=${c.color != null and !c.color.isEmpty() ? (c.color.startsWith('#') ? c.color : '#' + c.color) : '#6c757d'}">
               <td class="fw-semibold" th:text="${c.nombre}">Nombre</td>
               <td>
                 <i th:if="${c.icono != null and !c.icono.isEmpty()}" class="bi" th:classappend="${c.icono}" th:style="|color: ${colorVal}; font-size: 1.25rem|" aria-hidden="true"></i>
@@ -48,6 +51,24 @@
               </td>
               <td>
                 <span class="badge badge-category" th:style="|background: ${colorVal}20; color: ${colorVal}|" th:text="${colorVal}">#6c757d</span>
+              </td>
+              <td>
+                <th:block th:if="${cp.montoPresupuestado != null}">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="min-width: 80px; height: 1.25rem;">
+                      <div class="progress-bar" role="progressbar"
+                           th:style="|width: ${cp.porcentajeUsado != null ? T(java.lang.Math).min(cp.porcentajeUsado, 100) : 0}%|"
+                           th:classappend="${cp.excedido ? 'bg-danger' : 'bg-success'}">
+                      </div>
+                    </div>
+                    <span class="small text-nowrap" th:text="${#numbers.formatDecimal(cp.gastoActual, 1, 2)} + ' / ' + ${#numbers.formatDecimal(cp.montoPresupuestado, 1, 2)} + ' $'">0 / 0 $</span>
+                  </div>
+                  <a th:if="${cp.budgetId != null}" th:href="@{/budgets/{id}/edit(id=${cp.budgetId})}" class="small">Editar presupuesto</a>
+                  <a th:if="${cp.budgetId == null}" th:href="@{/budgets/new(categoryId=${c.id})}" class="small">Definir presupuesto</a>
+                </th:block>
+                <th:block th:if="${cp.montoPresupuestado == null}">
+                  <a th:href="@{/budgets/new(categoryId=${c.id})}" class="btn btn-sm btn-outline-secondary">Definir presupuesto</a>
+                </th:block>
               </td>
               <td class="text-end">
                 <a th:href="@{/categories/{id}/edit(id=${c.id})}" class="btn btn-sm btn-outline-primary">Editar</a>

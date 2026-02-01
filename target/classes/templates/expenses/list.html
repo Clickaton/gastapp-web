@@ -18,6 +18,10 @@
       <span th:text="${error}"></span>
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+    <div th:if="${warning}" class="alert alert-warning alert-gastapp alert-dismissible fade show">
+      <span th:text="${warning}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
       <h1 class="page-title mb-0">Gastos</h1>
@@ -35,6 +39,7 @@
               <th>Fecha</th>
               <th>Descripción</th>
               <th>Categoría</th>
+              <th>Cuenta</th>
               <th class="text-end">Monto</th>
               <th class="text-end action-btns">Acciones</th>
             </tr>
@@ -46,6 +51,7 @@
               <td>
                 <span class="badge badge-category" th:style="|background: ${catColor}20; color: ${catColor}|" th:text="${e.category != null ? e.category.nombre : '—'}">—</span>
               </td>
+              <td th:text="${e.account != null ? e.account.nombre : '—'}">—</td>
               <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(e.monto, 1, 2)} + ' $'">0,00 $</td>
               <td class="text-end">
                 <a th:href="@{/expenses/{id}/edit(id=${e.id})}" class="btn btn-sm btn-outline-primary">Editar</a>

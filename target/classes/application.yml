@@ -17,6 +17,8 @@ spring:
 
 ---
 # Desarrollo: H2 (JPA crea el esquema; schema.sql es solo para PostgreSQL)
+server:
+  address: 0.0.0.0   # Permite acceso desde celular/otros dispositivos en la misma WiFi (usá la IP de tu PC)
 spring:
   config:
     activate:

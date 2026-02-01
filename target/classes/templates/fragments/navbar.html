@@ -13,10 +13,19 @@
             <a class="nav-link" th:href="@{/dashboard}" th:classappend="${(requestURI == '/dashboard' or requestURI == '/') ? 'active' : ''}">Dashboard</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" th:href="@{/incomes}" th:classappend="${requestURI != null and requestURI.startsWith('/incomes') ? 'active' : ''}">Ingresos</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" th:href="@{/expenses}" th:classappend="${requestURI != null and requestURI.startsWith('/expenses') ? 'active' : ''}">Gastos</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" th:href="@{/accounts}" th:classappend="${requestURI != null and requestURI.startsWith('/accounts') ? 'active' : ''}">Cuentas</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" th:href="@{/categories}" th:classappend="${requestURI != null and requestURI.startsWith('/categories') ? 'active' : ''}">Categorías</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/budgets}" th:classappend="${requestURI != null and requestURI.startsWith('/budgets') ? 'active' : ''}">Presupuestos</a>
           </li>
         </ul>
         <form th:action="@{/logout}" method="post" class="d-flex">

@@ -12,6 +12,7 @@ import java.util.UUID;
 @Table(name = "expenses", indexes = {
     @Index(name = "ix_expenses_user_id", columnList = "user_id"),
     @Index(name = "ix_expenses_category_id", columnList = "category_id"),
+    @Index(name = "ix_expenses_account_id", columnList = "account_id"),
     @Index(name = "ix_expenses_fecha", columnList = "fecha")
 })
 @Getter
@@ -38,6 +39,10 @@ public class Expense extends BaseAuditableEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
