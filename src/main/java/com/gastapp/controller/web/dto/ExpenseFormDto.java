@@ -6,6 +6,7 @@ import com.gastapp.model.Expense;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,8 +20,11 @@ public class ExpenseFormDto {
     @DecimalMin(value = "0.01", message = "El monto debe ser mayor a 0")
     private BigDecimal monto;
     private String descripcion = "";
+
     @NotNull(message = "La fecha es obligatoria")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fecha = LocalDate.now();
+
     @NotNull(message = "Elegí una categoría")
     private UUID categoryId;
     @NotNull(message = "Elegí una cuenta")

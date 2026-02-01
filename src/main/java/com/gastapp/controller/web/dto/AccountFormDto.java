@@ -29,6 +29,9 @@ public class AccountFormDto {
     @Size(max = 20)
     private String color = "#6c757d";
 
+    private boolean isShared = false;
+    private String sharedUserEmail = "";
+
     public static AccountFormDto from(Account a) {
         AccountFormDto dto = new AccountFormDto();
         dto.setId(a.getId());
@@ -38,6 +41,12 @@ public class AccountFormDto {
         dto.setIcono(a.getIcono() != null ? a.getIcono() : "");
         String aColor = a.getColor();
         dto.setColor(aColor != null && !aColor.isBlank() ? (aColor.startsWith("#") ? aColor : "#" + aColor) : "#6c757d");
+        dto.setShared(a.isShared());
+        // For sharedUserEmail, if there are shared users, pick one (first).
+        // Requirement says "allow selecting a user". Assuming one for simplicity or first one.
+        if (!a.getSharedUsers().isEmpty()) {
+            dto.setSharedUserEmail(a.getSharedUsers().iterator().next().getEmail());
+        }
         return dto;
     }
 
@@ -54,6 +63,7 @@ public class AccountFormDto {
             .icono(icono != null && !icono.isBlank() ? icono.trim() : null)
             .color(colorValue)
             .user(user)
+            .isShared(isShared)
             .build();
     }
 }

@@ -24,7 +24,19 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <h1 class="page-title">Dashboard</h1>
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="position-relative">
+            <img th:if="${currentUser != null and currentUser.fotoPerfil != null}"
+                 th:src="${'data:image/png;base64,' + currentUser.fotoPerfil}"
+                 class="rounded-circle border border-2 border-white shadow-sm" width="64" height="64" alt="Perfil" style="object-fit: cover;">
+            <i th:if="${currentUser == null or currentUser.fotoPerfil == null}"
+               class="bi bi-person-circle text-secondary" style="font-size: 4rem;"></i>
+        </div>
+        <div>
+            <h1 class="page-title mb-0">Dashboard</h1>
+            <p class="text-muted small mb-0" th:if="${currentUser != null}" th:text="'Hola, ' + ${currentUser.nombre}"></p>
+        </div>
+    </div>
 
     <div class="row g-4 mb-4">
         <div class="col-12 col-md-4">
@@ -81,7 +93,12 @@
                             <td>
                                 <span class="badge badge-category" th:style="|background: ${catColor}20; color: ${catColor}|" th:text="${e.category != null ? e.category.nombre : '—'}">—</span>
                             </td>
-                            <td th:text="${e.account != null ? e.account.nombre : '—'}">—</td>
+                            <td>
+                                <span th:text="${e.account != null ? e.account.nombre : '—'}">—</span>
+                                <div th:if="${e.account != null and e.account.shared}" class="mt-1">
+                                    <span class="badge bg-secondary" style="font-size: 0.65rem;" th:text="'Cargado por: ' + ${e.user.nombre}"></span>
+                                </div>
+                            </td>
                             <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(e.monto, 1, 2)} + ' $'">0,00 $</td>
                             <td class="text-end">
                                 <a th:href="@{/expenses/{id}/edit(id=${e.id})}" class="btn btn-sm btn-outline-primary">Editar</a>

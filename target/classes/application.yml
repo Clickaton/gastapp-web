@@ -27,7 +27,8 @@ spring:
     init:
       mode: never
   datasource:
-    url: jdbc:h2:mem:gastapp;DB_CLOSE_DELAY=-1
+    # Cambiado a persistencia en archivo para evitar pérdida de datos al reiniciar
+    url: jdbc:h2:file:./data/gastapp;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -37,7 +38,8 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      # Cambiado a update para mantener esquema y datos entre reinicios
+      ddl-auto: update
 
 ---
 # Producción: PostgreSQL

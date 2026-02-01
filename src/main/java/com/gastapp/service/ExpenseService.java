@@ -25,7 +25,7 @@ public class ExpenseService {
 
     @Transactional(readOnly = true)
     public List<Expense> findAllByUserId(UUID userId) {
-        return expenseRepository.findByUserIdOrderByFechaDescWithCategory(userId);
+        return expenseRepository.findExpensesForUser(userId);
     }
 
     @Transactional(readOnly = true)

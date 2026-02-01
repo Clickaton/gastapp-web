@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -43,8 +45,21 @@ public class Account extends BaseAuditableEntity {
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
 
+    @Builder.Default
+    @Column(name = "is_shared", nullable = false)
+    private boolean isShared = false;
+
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "account_shared_users",
+        joinColumns = @JoinColumn(name = "account_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> sharedUsers = new HashSet<>();
+
     @Override
     public String toString() {
-        return "Account{id=" + id + ", nombre='" + nombre + "', tipo=" + tipo + ", user=" + (user != null ? user.getId() : null) + "}";
+        return "Account{id=" + id + ", nombre='" + nombre + "', tipo=" + tipo + ", user=" + (user != null ? user.getId() : null) + ", isShared=" + isShared + "}";
     }
 }

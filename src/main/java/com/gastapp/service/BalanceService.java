@@ -64,7 +64,7 @@ public class BalanceService {
      */
     @Transactional(readOnly = true)
     public List<CuentaConSaldo> listarCuentasConSaldos(UUID userId) {
-        List<Account> accounts = accountRepository.findByUserIdOrderByNombreAsc(userId);
+        List<Account> accounts = accountRepository.findAccountsForUser(userId);
         return accounts.stream()
             .map(a -> new CuentaConSaldo(a, calcularSaldoCuenta(a.getId())))
             .collect(Collectors.toList());

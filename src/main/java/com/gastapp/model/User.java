@@ -7,8 +7,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -33,6 +36,17 @@ public class User extends BaseAuditableEntity implements UserDetails {
 
     @Column(nullable = false, length = 255)
     private String nombre;
+
+    @Column(name = "foto_perfil", columnDefinition = "TEXT")
+    private String fotoPerfil;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Account> accounts = new ArrayList<>();
+
+    @Builder.Default
+    @ManyToMany(mappedBy = "sharedUsers")
+    private Set<Account> sharedAccounts = new HashSet<>();
 
     @Override
     public String getUsername() {
