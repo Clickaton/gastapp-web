@@ -31,7 +31,7 @@
         <div class="d-flex align-items-center gap-3">
             <a th:href="@{/profile}" class="d-flex align-items-center text-decoration-none text-secondary">
                 <img th:if="${currentUser != null and currentUser.fotoPerfil != null}"
-                     th:src="${'data:image/png;base64,' + currentUser.fotoPerfil}"
+                     th:src="@{'/uploads/' + ${currentUser.fotoPerfil}}"
                      class="rounded-circle border" width="32" height="32" alt="Perfil" style="object-fit: cover;">
                 <i th:if="${currentUser == null or currentUser.fotoPerfil == null}"
                    class="bi bi-person-circle fs-4"></i>

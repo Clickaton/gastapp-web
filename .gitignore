@@ -1,0 +1,12 @@
+target/
+.idea/
+.vscode/
+*.log
+data/
+uploads/
+__pycache__/
+*.pyc
+*.mv.db
+.DS_Store
+tests/failure_full.png
+tests/verification_full.png

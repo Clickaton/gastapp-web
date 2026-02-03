@@ -102,6 +102,8 @@ public class AccountService {
                      account.getSharedUsers().clear(); // Enforce single shared user for now based on UI
                      account.getSharedUsers().add(userToShare);
                  }
+             } else {
+                 throw new IllegalArgumentException("Usuario no encontrado con email: " + email);
              }
         }
 

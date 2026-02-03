@@ -27,7 +27,7 @@
     <div class="d-flex align-items-center gap-3 mb-4">
         <div class="position-relative">
             <img th:if="${currentUser != null and currentUser.fotoPerfil != null}"
-                 th:src="${'data:image/png;base64,' + currentUser.fotoPerfil}"
+                 th:src="@{'/uploads/' + ${currentUser.fotoPerfil}}"
                  class="rounded-circle border border-2 border-white shadow-sm" width="64" height="64" alt="Perfil" style="object-fit: cover;">
             <i th:if="${currentUser == null or currentUser.fotoPerfil == null}"
                class="bi bi-person-circle text-secondary" style="font-size: 4rem;"></i>

@@ -34,6 +34,7 @@ com/gastapp/model/Budget$BudgetBuilder.class
 com/gastapp/controller/ExpenseController.class
 com/gastapp/service/CurrentUserService.class
 com/gastapp/model/Account$AccountBuilder.class
+com/gastapp/service/FileStorageService.class
 com/gastapp/repository/UserRepository.class
 com/gastapp/controller/DashboardController.class
 com/gastapp/controller/web/CategoryWebController.class
@@ -44,6 +45,7 @@ com/gastapp/model/AccountType.class
 com/gastapp/controller/web/dto/ExpenseFormDto.class
 com/gastapp/model/Budget.class
 com/gastapp/controller/web/dto/IncomeFormDto.class
+com/gastapp/config/WebMvcConfig.class
 com/gastapp/repository/BudgetRepository.class
 com/gastapp/service/BalanceService.class
 com/gastapp/model/BaseAuditableEntity.class

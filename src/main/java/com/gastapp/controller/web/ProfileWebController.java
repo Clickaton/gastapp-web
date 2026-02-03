@@ -4,6 +4,7 @@ import com.gastapp.controller.web.dto.ProfileFormDto;
 import com.gastapp.model.User;
 import com.gastapp.repository.UserRepository;
 import com.gastapp.service.CurrentUserService;
+import com.gastapp.service.FileStorageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,10 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
-import java.util.Base64;
-import java.util.UUID;
-
 @Controller
 @RequestMapping("/profile")
 @RequiredArgsConstructor
@@ -25,6 +22,7 @@ public class ProfileWebController {
     private final CurrentUserService currentUserService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FileStorageService fileStorageService;
 
     @GetMapping
     public String profile(Model model) {
@@ -69,9 +67,9 @@ public class ProfileWebController {
         // Handle Photo
         if (form.getFoto() != null && !form.getFoto().isEmpty()) {
             try {
-                String base64Image = Base64.getEncoder().encodeToString(form.getFoto().getBytes());
-                user.setFotoPerfil(base64Image);
-            } catch (IOException e) {
+                String filename = fileStorageService.store(form.getFoto());
+                user.setFotoPerfil(filename);
+            } catch (Exception e) {
                 result.rejectValue("foto", "foto.error", "Error al subir la imagen.");
                 return "profile/form";
             }

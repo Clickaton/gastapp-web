@@ -4,6 +4,7 @@ import com.gastapp.controller.web.dto.ExpenseFormDto;
 import com.gastapp.model.Account;
 import com.gastapp.model.Category;
 import com.gastapp.model.Expense;
+import com.gastapp.model.User;
 import com.gastapp.service.AccountService;
 import com.gastapp.service.BudgetValidationResult;
 import com.gastapp.service.CategoryService;
@@ -91,7 +92,16 @@ public class ExpenseWebController {
         if (budgetCheck != null && budgetCheck.presupuestoExcedido()) {
             redirect.addFlashAttribute("warning", budgetCheck.getMensajeAviso());
         }
+
+        // Ensure user is set to Current User (creator of the expense record)
+        // ExpenseFormDto.toExpense uses category.getUser() which might be the Owner of the category
+        // But if I am a shared user, I am creating the expense.
+        // The requirement says "Cargado por: [Nombre]" should show who created it.
+        // So we should set user to current user.
+        User currentUser = currentUserService.getCurrentUserOrThrow();
         Expense expense = form.toExpense(category, account);
+        expense.setUser(currentUser); // Explicitly set current user as creator
+
         expenseService.save(expense);
         redirect.addFlashAttribute("message", form.getId() != null ? "Gasto actualizado." : "Gasto creado.");
         return "redirect:/expenses";

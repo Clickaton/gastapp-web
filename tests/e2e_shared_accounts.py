@@ -3,6 +3,7 @@ import time
 import uuid
 import base64
 import os
+import re
 
 def verify_full_flow():
     with sync_playwright() as p:
@@ -58,9 +59,15 @@ def verify_full_flow():
 
             expect(page.locator("text=Perfil actualizado correctamente.")).to_be_visible()
 
+            # Verify Image Upload logic (indirectly via UI, can also check FS)
             # Verify Dashboard update
             page.goto("http://localhost:8080/dashboard")
             expect(page.locator("text=Hola, User A Updated")).to_be_visible()
+            # Verify image src contains /uploads/
+            img_src = page.locator("img[alt='Perfil']").first.get_attribute("src")
+            print(f"Image Source: {img_src}")
+            if "/uploads/" not in img_src:
+                raise Exception("Image source does not contain /uploads/")
 
             # Create Shared Account
             print("Creating Shared Account...")
@@ -80,42 +87,48 @@ def verify_full_flow():
             # 3. Login User B
             login(user_b_email, password)
 
-            # Verify Account visible
-            expect(page.locator("text=Cuenta Compartida")).to_be_visible()
-
-            # Try to Edit Account (Assuming link exists, checking security)
-            # Find the account link or button. The list has "Nueva" button but editing is via link?
-            # In index.html list: no edit button shown in dashboard?
-            # In accounts/list: yes.
+            # Verify Account visible and Detail View
+            print("Verifying Account Detail...")
             page.goto("http://localhost:8080/accounts")
-            # Find Edit button for "Cuenta Compartida".
-            # The row contains "Cuenta Compartida".
-            # Verify if Edit button is present or if clicking it redirects/errors.
-            # Assuming row structure.
-            # Let's try to access edit URL directly if we can guess ID or find link.
-            # Getting href from the edit button.
-            edit_link = page.locator("li:has-text('Cuenta Compartida')").locator("a:has-text('Editar')")
+            # Click Account Name to go to detail
+            page.click("text=Cuenta Compartida")
 
-            if edit_link.count() > 0:
-                 # If link exists, try to click
-                 print("Edit link found, trying to click...")
-                 edit_link.click()
-                 # Should redirect to list with error
-                 expect(page.locator("text=Solo el propietario puede editar la cuenta.")).to_be_visible()
-            else:
-                 print("No edit link found (Good UI protection if implemented, but we are testing Controller Security)")
-                 # If no link, good. But let's verify Controller security by manually constructing URL if possible?
-                 # Hard to know UUID.
-                 pass
+            # Check for Split info (Should be 0 expenses initially)
+            expect(page.locator("text=División de Gastos")).to_be_visible()
+            expect(page.locator("text=Monto por persona")).to_be_visible()
 
-            # Verify Add Expense Date
-            print("Verifying Expense Date...")
+            # Add Expense
+            print("Adding expense...")
             page.goto("http://localhost:8080/expenses/new")
-            # Check date input value
-            date_value = page.input_value("input[name='fecha']")
-            print(f"Date value: {date_value}")
-            if not date_value:
-                raise Exception("Date field is empty!")
+            page.fill("input[name='monto']", "500")
+            page.fill("input[name='descripcion']", "Gasto de B")
+
+            # Create Category if needed (User B needs category)
+            # Check if category list is empty? User B has no categories.
+            # Create category first.
+            page.goto("http://localhost:8080/categories/new")
+            page.fill("input[name='nombre']", "General")
+            page.click("button:has-text('Guardar')")
+
+            page.goto("http://localhost:8080/expenses/new")
+            page.fill("input[name='monto']", "500")
+            page.fill("input[name='descripcion']", "Gasto de B")
+            # Date should be auto-filled
+            date_val = page.input_value("input[name='fecha']")
+            if not date_val:
+                raise Exception("Date not autofilled")
+
+            page.select_option("select[name='categoryId']", label="General")
+            page.select_option("select[name='accountId']", label="Cuenta Compartida")
+            page.click("button:has-text('Guardar')")
+
+            # Verify Split Amount in Detail
+            page.goto("http://localhost:8080/accounts")
+            page.click("text=Cuenta Compartida")
+            # Total = 500. Split (2 people) = 250.
+            # Use Regex to allow "500.00 $" or "500,00 $"
+            expect(page.get_by_text(re.compile(r"500[.,]00 \$"))).to_be_visible() # Total
+            expect(page.get_by_text(re.compile(r"250[.,]00 \$"))).to_be_visible() # Split
 
             # Logout
             page.click("button:has-text('Cerrar sesión')")
