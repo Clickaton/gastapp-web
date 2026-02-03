@@ -35,6 +35,14 @@ public class IncomeService {
         return incomeRepository.sumMontoByUserIdAndFechaBetween(userId, start, end);
     }
 
+    @Transactional(readOnly = true)
+    public BigDecimal sumMontoByAccountIdsAndMonth(List<UUID> accountIds, int year, int month) {
+        if (accountIds == null || accountIds.isEmpty()) return BigDecimal.ZERO;
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+        return incomeRepository.sumMontoByAccountIdsAndFechaBetween(accountIds, start, end);
+    }
+
     @Transactional
     public Income save(Income income) {
         return incomeRepository.save(income);

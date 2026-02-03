@@ -26,6 +26,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     @Query("SELECT DISTINCT e FROM Expense e LEFT JOIN e.account.sharedUsers u WHERE e.account.user.id = :userId OR u.id = :userId ORDER BY e.fecha DESC")
     List<Expense> findExpensesForUser(@Param("userId") UUID userId);
 
+    @EntityGraph(attributePaths = {"category", "account", "user", "account.user"})
+    List<Expense> findByAccountIdInOrderByFechaDesc(List<UUID> accountIds);
+
     Optional<Expense> findByIdAndUserId(UUID id, UUID userId);
 
     boolean existsByIdAndUserId(UUID id, UUID userId);
@@ -38,6 +41,13 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     @Query("SELECT COALESCE(SUM(e.monto), 0) FROM Expense e WHERE e.user.id = :userId AND e.fecha BETWEEN :desde AND :hasta")
     BigDecimal sumMontoByUserIdAndFechaBetween(
         @Param("userId") UUID userId,
+        @Param("desde") LocalDate desde,
+        @Param("hasta") LocalDate hasta
+    );
+
+    @Query("SELECT COALESCE(SUM(e.monto), 0) FROM Expense e WHERE e.account.id IN :accountIds AND e.fecha BETWEEN :desde AND :hasta")
+    BigDecimal sumMontoByAccountIdsAndFechaBetween(
+        @Param("accountIds") List<UUID> accountIds,
         @Param("desde") LocalDate desde,
         @Param("hasta") LocalDate hasta
     );

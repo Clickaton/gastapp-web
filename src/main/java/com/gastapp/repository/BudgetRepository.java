@@ -1,6 +1,7 @@
 package com.gastapp.repository;
 
 import com.gastapp.model.Budget;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, UUID> {
 
+    @EntityGraph(attributePaths = {"category"})
     List<Budget> findByUserIdOrderByAnioDescMesDesc(UUID userId);
 
     @Query("SELECT b FROM Budget b WHERE b.user.id = :userId AND b.category.id = :categoryId AND b.mes = :mes AND b.anio = :anio")
@@ -23,6 +25,7 @@ public interface BudgetRepository extends JpaRepository<Budget, UUID> {
         @Param("anio") int anio
     );
 
+    @EntityGraph(attributePaths = {"category"})
     @Query("SELECT b FROM Budget b WHERE b.user.id = :userId AND b.mes = :mes AND b.anio = :anio")
     List<Budget> findByUserIdAndMesAndAnio(
         @Param("userId") UUID userId,

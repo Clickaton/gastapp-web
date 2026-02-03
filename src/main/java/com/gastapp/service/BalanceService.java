@@ -44,6 +44,7 @@ public class BalanceService {
 
     /**
      * Balance neto del mes actual: Total Ingresos Mes - Total Gastos Mes.
+     * @deprecated Use balanceNetoMensualByAccountIds for correct shared account handling.
      */
     @Transactional(readOnly = true)
     public BigDecimal balanceNetoMensual(UUID userId, int year, int month) {
@@ -51,6 +52,16 @@ public class BalanceService {
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
         BigDecimal ingresos = incomeRepository.sumMontoByUserIdAndFechaBetween(userId, start, end);
         BigDecimal gastos = expenseRepository.sumMontoByUserIdAndFechaBetween(userId, start, end);
+        return ingresos.subtract(gastos);
+    }
+
+    @Transactional(readOnly = true)
+    public BigDecimal balanceNetoMensualByAccountIds(List<UUID> accountIds, int year, int month) {
+        if (accountIds == null || accountIds.isEmpty()) return BigDecimal.ZERO;
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+        BigDecimal ingresos = incomeRepository.sumMontoByAccountIdsAndFechaBetween(accountIds, start, end);
+        BigDecimal gastos = expenseRepository.sumMontoByAccountIdsAndFechaBetween(accountIds, start, end);
         return ingresos.subtract(gastos);
     }
 

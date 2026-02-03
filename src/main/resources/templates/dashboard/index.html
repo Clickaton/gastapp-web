@@ -24,17 +24,35 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <div class="d-flex align-items-center gap-3 mb-4">
-        <div class="position-relative">
-            <img th:if="${currentUser != null and currentUser.fotoPerfil != null}"
-                 th:src="@{'/uploads/' + ${currentUser.fotoPerfil}}"
-                 class="rounded-circle border border-2 border-white shadow-sm" width="64" height="64" alt="Perfil" style="object-fit: cover;">
-            <i th:if="${currentUser == null or currentUser.fotoPerfil == null}"
-               class="bi bi-person-circle text-secondary" style="font-size: 4rem;"></i>
+    <!-- Header with Selector -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="position-relative">
+                <img th:if="${currentUser != null and currentUser.fotoPerfil != null}"
+                     th:src="@{'/uploads/' + ${currentUser.fotoPerfil}}"
+                     class="rounded-circle border border-2 border-white shadow-sm" width="64" height="64" alt="Perfil" style="object-fit: cover;">
+                <i th:if="${currentUser == null or currentUser.fotoPerfil == null}"
+                   class="bi bi-person-circle text-secondary" style="font-size: 4rem;"></i>
+            </div>
+            <div>
+                <h1 class="page-title mb-0">Dashboard</h1>
+                <p class="text-muted small mb-0" th:if="${currentUser != null}" th:text="'Hola, ' + ${currentUser.nombre}"></p>
+            </div>
         </div>
+
+        <!-- Account Selector -->
         <div>
-            <h1 class="page-title mb-0">Dashboard</h1>
-            <p class="text-muted small mb-0" th:if="${currentUser != null}" th:text="'Hola, ' + ${currentUser.nombre}"></p>
+            <form th:action="@{/dashboard}" method="get">
+                <select name="accountId" class="form-select shadow-sm" onchange="this.form.submit()" style="min-width: 250px; border-color: #dee2e6;">
+                    <option value="" th:selected="${selectedAccountId == null}">Todas las cuentas</option>
+                    <option th:each="acc : ${allAccounts}"
+                            th:value="${acc.id}"
+                            th:text="${acc.nombre}"
+                            th:selected="${selectedAccountId != null and selectedAccountId.equals(acc.id)}">
+                        Cuenta
+                    </option>
+                </select>
+            </form>
         </div>
     </div>
 
@@ -70,10 +88,13 @@
     <div class="row g-4">
         <div class="col-12 col-lg-8">
             <div class="card card-gastapp">
-                <div class="card-header card-header-gastapp">Últimos gastos</div>
+                <div class="card-header card-header-gastapp">
+                    <span th:text="${selectedAccountId != null ? 'Últimos gastos (Filtrado)' : 'Últimos gastos'}">Últimos gastos</span>
+                </div>
                 <div class="card-body p-0">
                     <div th:if="${#lists.isEmpty(ultimosGastos)}" class="p-4 text-muted text-center">
-                        Aún no tenés gastos registrados. <a th:href="@{/expenses/new}">Agregar gasto</a>
+                        <span th:if="${selectedAccountId == null}">Aún no tenés gastos registrados. <a th:href="@{/expenses/new}">Agregar gasto</a></span>
+                        <span th:if="${selectedAccountId != null}">No hay gastos en esta cuenta para el periodo.</span>
                     </div>
                     <table th:if="${!#lists.isEmpty(ultimosGastos)}" class="table table-gastapp table-hover mb-0">
                         <thead>
@@ -125,6 +146,7 @@
                 <span class="d-flex align-items-center gap-2">
                   <i th:if="${acc.icono != null and !acc.icono.isEmpty()}" class="bi" th:classappend="${acc.icono}" th:style="|color: ${colorVal}|" aria-hidden="true"></i>
                   <span th:text="${acc.nombre}">Cuenta</span>
+                  <span th:if="${acc.shared}" class="badge bg-info text-dark" style="font-size: 0.6em;">Compartida</span>
                 </span>
                             <span class="fw-semibold" th:classappend="${cs.saldoActual().compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? 'text-success' : 'text-danger'}"
                                   th:text="${#numbers.formatDecimal(cs.saldoActual(), 1, 2)} + ' $'">0,00 $</span>

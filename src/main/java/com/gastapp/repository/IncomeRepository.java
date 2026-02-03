@@ -31,6 +31,13 @@ public interface IncomeRepository extends JpaRepository<Income, UUID> {
         @Param("hasta") LocalDate hasta
     );
 
+    @Query("SELECT COALESCE(SUM(i.monto), 0) FROM Income i WHERE i.account.id IN :accountIds AND i.fecha BETWEEN :desde AND :hasta")
+    BigDecimal sumMontoByAccountIdsAndFechaBetween(
+        @Param("accountIds") List<UUID> accountIds,
+        @Param("desde") LocalDate desde,
+        @Param("hasta") LocalDate hasta
+    );
+
     @Query("SELECT COALESCE(SUM(i.monto), 0) FROM Income i WHERE i.account.id = :accountId AND i.fecha <= :hasta")
     BigDecimal sumMontoByAccountIdAndFechaBefore(
         @Param("accountId") UUID accountId,

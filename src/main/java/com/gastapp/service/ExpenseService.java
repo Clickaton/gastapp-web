@@ -29,6 +29,11 @@ public class ExpenseService {
     }
 
     @Transactional(readOnly = true)
+    public List<Expense> findByAccountIds(List<UUID> accountIds) {
+        return expenseRepository.findByAccountIdInOrderByFechaDesc(accountIds);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Expense> findByIdAndUserId(UUID expenseId, UUID userId) {
         return expenseRepository.findByIdAndUserId(expenseId, userId);
     }
@@ -38,6 +43,14 @@ public class ExpenseService {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
         return expenseRepository.sumMontoByUserIdAndFechaBetween(userId, start, end);
+    }
+
+    @Transactional(readOnly = true)
+    public BigDecimal sumMontoByAccountIdsAndMonth(List<UUID> accountIds, int year, int month) {
+        if (accountIds == null || accountIds.isEmpty()) return BigDecimal.ZERO;
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+        return expenseRepository.sumMontoByAccountIdsAndFechaBetween(accountIds, start, end);
     }
 
     @Transactional(readOnly = true)
