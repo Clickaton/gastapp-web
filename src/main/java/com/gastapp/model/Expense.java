@@ -48,6 +48,19 @@ public class Expense extends BaseAuditableEntity {
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
 
+    @Column(name = "es_cuotas", nullable = false)
+    private boolean esCuotas = false;
+
+    @Column(name = "cuota_actual")
+    private Integer cuotaActual = 1;
+
+    @Column(name = "total_cuotas")
+    private Integer totalCuotas = 1;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Expense parent;
+
     @Override
     public String toString() {
         return "Expense{id=" + id + ", monto=" + monto + ", fecha=" + fecha + ", user=" + (user != null ? user.getId() : null) + "}";

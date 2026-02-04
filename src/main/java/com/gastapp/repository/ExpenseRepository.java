@@ -33,6 +33,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
 
     boolean existsByIdAndUserId(UUID id, UUID userId);
 
+    List<Expense> findByParentId(UUID parentId);
+
     long countByCategoryId(UUID categoryId);
 
     /**

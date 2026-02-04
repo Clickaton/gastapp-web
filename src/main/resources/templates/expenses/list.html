@@ -47,7 +47,14 @@
           <tbody>
             <tr th:each="e : ${expenses}" th:with="catColor=${e.category != null and e.category.color != null and !e.category.color.isEmpty() ? (e.category.color.startsWith('#') ? e.category.color : '#' + e.category.color) : '#6c757d'}">
               <td th:text="${#temporals.format(e.fecha, 'dd/MM/yyyy')}">01/01/2025</td>
-              <td th:text="${e.descripcion != null ? e.descripcion : '—'}">—</td>
+              <td>
+                  <span th:text="${e.descripcion != null ? e.descripcion : '—'}">—</span>
+                  <div th:if="${e.esCuotas}" class="small text-muted">
+                      <span class="badge bg-light text-dark border">
+                          Cuota <span th:text="${e.cuotaActual}">1</span>/<span th:text="${e.totalCuotas}">1</span>
+                      </span>
+                  </div>
+              </td>
               <td>
                 <span class="badge badge-category" th:style="|background: ${catColor}20; color: ${catColor}|" th:text="${e.category != null ? e.category.nombre : '—'}">—</span>
               </td>
