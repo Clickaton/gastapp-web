@@ -31,7 +31,7 @@ public class ExpenseFormDto {
     private UUID accountId;
 
     private boolean esCuotas = false;
-    private Integer cantidadCuotas = 1;
+    private Integer totalCuotas = 1;
 
     public static ExpenseFormDto from(Expense e) {
         ExpenseFormDto dto = new ExpenseFormDto();
@@ -42,7 +42,7 @@ public class ExpenseFormDto {
         dto.setCategoryId(e.getCategory().getId());
         dto.setAccountId(e.getAccount().getId());
         dto.setEsCuotas(e.isEsCuotas());
-        dto.setCantidadCuotas(e.getTotalCuotas());
+        dto.setTotalCuotas(e.getTotalCuotas());
         return dto;
     }
 
@@ -56,8 +56,8 @@ public class ExpenseFormDto {
             .account(account)
             .user(category.getUser())
             .esCuotas(esCuotas)
-            .totalCuotas(cantidadCuotas != null ? cantidadCuotas : 1)
-            .cuotaActual(1) // Default for new, handled logic in Service
+            .totalCuotas(totalCuotas != null ? totalCuotas : 1)
+            .cuotaActual(1)
             .build();
     }
 }

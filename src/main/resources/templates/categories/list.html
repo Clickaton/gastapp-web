@@ -57,7 +57,7 @@
                   <div class="d-flex align-items-center gap-2">
                     <div class="progress flex-grow-1" style="min-width: 80px; height: 1.25rem;">
                       <div class="progress-bar" role="progressbar"
-                           th:style="|width: ${cp.porcentajeUsado != null ? T(java.lang.Math).min(cp.porcentajeUsado, 100) : 0}%|"
+                           th:style="|width: ${cp.porcentajeUsado != null ? (cp.porcentajeUsado.doubleValue() > 100.0 ? 100.0 : cp.porcentajeUsado.doubleValue()) : 0}%|"
                            th:classappend="${cp.excedido ? 'bg-danger' : 'bg-success'}">
                       </div>
                     </div>

@@ -50,27 +50,24 @@
               </select>
               <p th:if="${#fields.hasErrors('accountId')}" th:errors="*{accountId}" class="text-danger small mt-1"></p>
             </div>
+            <!-- Sección de Cuotas -->
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" th:field="*{esCuotas}" id="esCuotas">
+                    <label class="form-check-label" for="esCuotas">
+                        Compra en cuotas
+                    </label>
+                </div>
+            </div>
+            <div class="col-12 col-md-6" id="cuotasSection" style="display: none;">
+                <label class="form-label">Cantidad de Cuotas</label>
+                <input type="number" th:field="*{totalCuotas}" class="form-control" min="2" max="100">
+            </div>
+
             <div class="col-12">
               <label class="form-label">Descripción</label>
               <input type="text" th:field="*{descripcion}" class="form-control" placeholder="Opcional" maxlength="500"/>
             </div>
-
-            <!-- Installments Section -->
-            <div class="col-12" th:if="${expense.id == null}">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="esCuotas" th:field="*{esCuotas}">
-                    <label class="form-check-label" for="esCuotas">
-                        Es en cuotas
-                    </label>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6" id="installmentsContainer" style="display: none;">
-                <label class="form-label">Cantidad de cuotas</label>
-                <input type="number" th:field="*{cantidadCuotas}" class="form-control" min="2" max="60" value="1">
-                <small class="text-muted">Se generarán automáticamente los gastos futuros.</small>
-            </div>
-
           </div>
           <div class="mt-4 d-flex gap-2">
             <button type="submit" class="btn btn-gastapp">Guardar</button>
@@ -82,23 +79,21 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          const checkbox = document.getElementById('esCuotas');
-          const container = document.getElementById('installmentsContainer');
+    document.addEventListener('DOMContentLoaded', function() {
+        const esCuotasCheck = document.getElementById('esCuotas');
+        const cuotasSection = document.getElementById('cuotasSection');
 
-          if (checkbox && container) {
-              function toggleContainer() {
-                  if (checkbox.checked) {
-                      container.style.display = 'block';
-                  } else {
-                      container.style.display = 'none';
-                  }
-              }
+        function toggleCuotas() {
+            if (esCuotasCheck.checked) {
+                cuotasSection.style.display = 'block';
+            } else {
+                cuotasSection.style.display = 'none';
+            }
+        }
 
-              checkbox.addEventListener('change', toggleContainer);
-              toggleContainer(); // Initial state
-          }
-      });
+        esCuotasCheck.addEventListener('change', toggleCuotas);
+        toggleCuotas(); // Initial check
+    });
   </script>
 </body>
 </html>

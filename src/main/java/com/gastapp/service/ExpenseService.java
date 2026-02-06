@@ -93,10 +93,13 @@ public class ExpenseService {
     private Expense createInstallmentExpenses(Expense parent) {
         int totalCuotas = parent.getTotalCuotas();
         BigDecimal totalMonto = parent.getMonto();
-        BigDecimal installmentAmount = totalMonto.divide(BigDecimal.valueOf(totalCuotas), 2, java.math.RoundingMode.HALF_UP);
+        // Calculate base installment amount (round down)
+        BigDecimal installmentAmount = totalMonto.divide(BigDecimal.valueOf(totalCuotas), 2, java.math.RoundingMode.DOWN);
+        // Calculate remainder to add to the first installment
+        BigDecimal remainder = totalMonto.subtract(installmentAmount.multiply(BigDecimal.valueOf(totalCuotas)));
 
-        // Adjust parent
-        parent.setMonto(installmentAmount);
+        // Adjust parent (First Installment gets the remainder)
+        parent.setMonto(installmentAmount.add(remainder));
         parent.setCuotaActual(1);
         parent = expenseRepository.save(parent); // Save parent first to get ID
 
@@ -127,19 +130,12 @@ public class ExpenseService {
         }
         Expense expense = expenseOpt.get();
 
-        // If it's a parent, delete children (cascade logic manual implementation for safety/control)
-        // Or if database cascade is not set.
-        // Also if it's a child, we might want to delete siblings?
-        // Requirement: "si se elimina el 'Gasto Padre', se pregunte al usuario si desea eliminar todas las cuotas futuras vinculadas."
-        // For MVP, I will just delete all associated with the parent if the user deletes the parent.
-        // If the user deletes a child, just delete the child.
-
-        // Note: Ideally we should use a custom query to delete by parentId
         if (expense.getParent() == null) {
-            // Check if it is a parent (has children)
-            // A query like deleteByParentId would be better.
+            // It is a parent or a single expense
             List<Expense> children = expenseRepository.findByParentId(expense.getId());
-            expenseRepository.deleteAll(children);
+            if (!children.isEmpty()) {
+                expenseRepository.deleteAll(children);
+            }
         }
 
         expenseRepository.delete(expense);

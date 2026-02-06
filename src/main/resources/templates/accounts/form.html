@@ -48,8 +48,8 @@
 
             <div class="col-12">
               <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="isShared" th:field="*{shared}">
-                <label class="form-check-label" for="isShared">Cuenta Compartida</label>
+                <input class="form-check-input" type="checkbox" role="switch" id="shared" th:field="*{shared}">
+                <label class="form-check-label" for="shared">Cuenta Compartida</label>
               </div>
             </div>
 
@@ -115,17 +115,17 @@
       const nombreInput = document.getElementById('nombreInput');
       const iconoValue = document.getElementById('iconoValue');
       const iconGrid = document.getElementById('iconGrid');
-      const isShared = document.getElementById('isShared');
+      const sharedCheckbox = document.getElementById('shared');
       const sharedEmailGroup = document.getElementById('sharedEmailGroup');
 
       function toggleSharedEmail() {
-        if (isShared && sharedEmailGroup) {
-          sharedEmailGroup.style.display = isShared.checked ? 'block' : 'none';
+        if (sharedCheckbox && sharedEmailGroup) {
+          sharedEmailGroup.style.display = sharedCheckbox.checked ? 'block' : 'none';
         }
       }
 
-      if (isShared) {
-        isShared.addEventListener('change', toggleSharedEmail);
+      if (sharedCheckbox) {
+        sharedCheckbox.addEventListener('change', toggleSharedEmail);
         toggleSharedEmail(); // Initial state
       }
 
