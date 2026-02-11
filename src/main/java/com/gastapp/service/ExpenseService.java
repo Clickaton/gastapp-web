@@ -116,6 +116,8 @@ public class ExpenseService {
                 .cuotaActual(i)
                 .totalCuotas(totalCuotas)
                 .parent(parent)
+                .icono(parent.getIcono())
+                .color(parent.getColor())
                 .build();
             expenseRepository.save(child);
         }

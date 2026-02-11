@@ -33,6 +33,9 @@ public class ExpenseFormDto {
     private boolean esCuotas = false;
     private Integer totalCuotas = 1;
 
+    private String icono = "";
+    private String color = "#6c757d";
+
     public static ExpenseFormDto from(Expense e) {
         ExpenseFormDto dto = new ExpenseFormDto();
         dto.setId(e.getId());
@@ -43,10 +46,17 @@ public class ExpenseFormDto {
         dto.setAccountId(e.getAccount().getId());
         dto.setEsCuotas(e.isEsCuotas());
         dto.setTotalCuotas(e.getTotalCuotas());
+        dto.setIcono(e.getIcono() != null ? e.getIcono() : "");
+        String eColor = e.getColor();
+        dto.setColor(eColor != null && !eColor.isBlank() ? (eColor.startsWith("#") ? eColor : "#" + eColor) : "#6c757d");
         return dto;
     }
 
     public Expense toExpense(Category category, Account account) {
+        String colorValue = (color != null && !color.isBlank()) ? color.trim() : null;
+        if (colorValue != null && !colorValue.startsWith("#")) {
+            colorValue = "#" + colorValue;
+        }
         return Expense.builder()
             .id(id != null ? id : UUID.randomUUID())
             .monto(monto)
@@ -58,6 +68,8 @@ public class ExpenseFormDto {
             .esCuotas(esCuotas)
             .totalCuotas(totalCuotas != null ? totalCuotas : 1)
             .cuotaActual(1)
+            .icono(icono != null && !icono.isBlank() ? icono.trim() : null)
+            .color(colorValue)
             .build();
     }
 }

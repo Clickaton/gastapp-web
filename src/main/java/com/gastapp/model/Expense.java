@@ -61,6 +61,12 @@ public class Expense extends BaseAuditableEntity {
     @JoinColumn(name = "parent_id")
     private Expense parent;
 
+    @Column(length = 50)
+    private String icono;
+
+    @Column(length = 20)
+    private String color;
+
     @Override
     public String toString() {
         return "Expense{id=" + id + ", monto=" + monto + ", fecha=" + fecha + ", user=" + (user != null ? user.getId() : null) + "}";
